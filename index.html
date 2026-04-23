@@ -276,6 +276,15 @@
             <input type="range" id="freqSlider" min="500" max="3000" step="100" value="1000">
         </div>
 
+        <!-- Volume Master -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Volume Master (Boost)</h2>
+                <span class="value-display" id="volumeValue">100%</span>
+            </div>
+            <input type="range" id="volumeSlider" min="0" max="200" step="5" value="100">
+        </div>
+
         <!-- Coarse Phase Control -->
         <div class="card">
             <div class="card-header">
@@ -318,6 +327,9 @@
         const coarseSlider = document.getElementById('coarseSlider');
         const coarseValue = document.getElementById('coarseValue');
 
+        const volumeSlider = document.getElementById('volumeSlider');
+        const volumeValue = document.getElementById('volumeValue');
+
         const fineValueDisplay = document.getElementById('fineValue');
         const knobElement = document.getElementById('knobElement');
         const knobWrapper = document.getElementById('knobWrapper');
@@ -331,6 +343,10 @@
         const scheduleAheadTime = 0.1; // s
         let nextNoteTime = 0.0; // s
         let timerID;
+
+        // Master nodes for loudness maximization
+        let masterGainNode;
+        let limiter;
 
         // Knob State
         let finePhaseMs = 0; // -200 to +200 ms
@@ -356,6 +372,13 @@
         coarseSlider.addEventListener('input', (e) => {
             let val = parseFloat(e.target.value);
             coarseValue.textContent = (val > 0 ? '+' : '') + val.toFixed(1) + ' s';
+        });
+
+        volumeSlider.addEventListener('input', (e) => {
+            volumeValue.textContent = e.target.value + '%';
+            if (masterGainNode) {
+                masterGainNode.gain.setTargetAtTime(parseFloat(e.target.value) / 100, audioCtx.currentTime, 0.02);
+            }
         });
 
         // Knob Logic (Vertical drag)
@@ -407,22 +430,24 @@
             if (!audioCtx) return;
 
             const osc = audioCtx.createOscillator();
-            const gainNode = audioCtx.createGain();
+            const envelopeGain = audioCtx.createGain();
 
-            osc.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
+            osc.connect(envelopeGain);
+            envelopeGain.connect(masterGainNode);
 
-            // Configurar um ruído percussivo: Estalo (click) de alta frequência
+            // Tipo 'square' já entrega a maior potência média (RMS) possível
             osc.type = 'square';
-            osc.frequency.value = parseFloat(freqSlider.value); // Frequência ajustável
+            osc.frequency.value = parseFloat(freqSlider.value);
 
-            // Envelope exponencial rápido (Attack curto, Decay rápido)
-            gainNode.gain.setValueAtTime(0, time);
-            gainNode.gain.linearRampToValueAtTime(1, time + 0.001); // 1ms attack
-            gainNode.gain.exponentialRampToValueAtTime(0.001, time + 0.010); // 10ms decay
+            // Envelope otimizado para maior "corpo" (percepção de volume)
+            // Aumentamos o tempo de sustentação e o decay para carregar mais energia sonora
+            envelopeGain.gain.setValueAtTime(0, time);
+            envelopeGain.gain.linearRampToValueAtTime(1.0, time + 0.002); // Attack ultra-rápido
+            envelopeGain.gain.setValueAtTime(1.0, time + 0.015); // "Hold" para dar corpo ao estalo
+            envelopeGain.gain.exponentialRampToValueAtTime(0.001, time + 0.060); // Decay mais longo (60ms)
 
             osc.start(time);
-            osc.stop(time + 0.015);
+            osc.stop(time + 0.080); // Garante que o som dure o suficiente
         }
 
         function scheduler() {
@@ -473,6 +498,22 @@
                 // Turn ON
                 if (!audioCtx) {
                     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    
+                    // Configuração da cadeia de saída master:
+                    // Oscilador -> Envelope -> MasterGain -> Limiter -> Destino
+                    masterGainNode = audioCtx.createGain();
+                    masterGainNode.gain.value = parseFloat(volumeSlider.value) / 100;
+                    
+                    limiter = audioCtx.createDynamicsCompressor();
+                    // Configuração agressiva do limiter para maximizar volume sem clipping digital "feio"
+                    limiter.threshold.setValueAtTime(-1.0, audioCtx.currentTime); // Atua próximo ao teto
+                    limiter.knee.setValueAtTime(0, audioCtx.currentTime); // Hard knee
+                    limiter.ratio.setValueAtTime(20, audioCtx.currentTime); // Ratio de limiter
+                    limiter.attack.setValueAtTime(0, audioCtx.currentTime);
+                    limiter.release.setValueAtTime(0.1, audioCtx.currentTime);
+                    
+                    masterGainNode.connect(limiter);
+                    limiter.connect(audioCtx.destination);
                 }
 
                 if (audioCtx.state === 'suspended') {

@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Som da Terra</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#121212">
+    <style>
+        :root {
+            --bg-color: #0f1115;
+            --card-bg: #1a1d24;
+            --accent: #00e5ff;
+            --accent-glow: rgba(0, 229, 255, 0.3);
+            --text-main: #f0f0f0;
+            --text-muted: #8b92a5;
+            --danger: #ff4757;
+            --success: #2ed573;
+        }
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        header {
+            width: 100%;
+            padding: 20px;
+            text-align: center;
+            background: linear-gradient(180deg, rgba(26, 29, 36, 1) 0%, rgba(15, 17, 21, 1) 100%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            margin-bottom: 20px;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--accent);
+            text-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        header p {
+            margin: 5px 0 0;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            padding: 0 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-main);
+            margin: 0;
+        }
+
+        .value-display {
+            font-family: monospace;
+            font-size: 1.1rem;
+            color: var(--accent);
+            background: rgba(0, 229, 255, 0.1);
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+
+        /* Power Button */
+        .power-btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #2f3640;
+            color: var(--text-main);
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .power-btn.active {
+            background: var(--success);
+            color: #000;
+            box-shadow: 0 0 20px rgba(46, 213, 115, 0.4);
+        }
+
+        .indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: var(--danger);
+            transition: background-color 0.3s ease;
+        }
+
+        .power-btn.active .indicator {
+            background-color: #000;
+        }
+
+        /* Sliders */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+
+        input[type=range]:focus {
+            outline: none;
+        }
+
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 6px;
+            cursor: pointer;
+            background: #2f3640;
+            border-radius: 3px;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            height: 24px;
+            width: 24px;
+            border-radius: 50%;
+            background: var(--accent);
+            cursor: pointer;
+            -webkit-appearance: none;
+            margin-top: -9px;
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        /* Knob Controls */
+        .knob-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .knob-wrapper {
+            position: relative;
+            width: 140px;
+            height: 140px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            touch-action: none;
+            /* Prevent scroll on touch */
+        }
+
+        .knob {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: conic-gradient(from 180deg at 50% 50%, #2a2e38 0deg, #1f222b 360deg);
+            box-shadow:
+                inset 0 2px 4px rgba(255, 255, 255, 0.1),
+                inset 0 -2px 4px rgba(0, 0, 0, 0.5),
+                0 10px 20px rgba(0, 0, 0, 0.4);
+            border: 2px solid #3a3f4d;
+            position: relative;
+            transform-origin: center;
+            will-change: transform;
+            cursor: grab;
+        }
+
+        .knob:active {
+            cursor: grabbing;
+        }
+
+        .knob-indicator {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 20px;
+            background: var(--accent);
+            border-radius: 3px;
+            box-shadow: 0 0 8px var(--accent);
+        }
+
+        .knob-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            background: #15181e;
+            border-radius: 50%;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .instructions {
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 15px;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>Som da Terra</h1>
+    </header>
+
+    <div class="container">
+
+        <!-- Power Button -->
+        <button id="powerBtn" class="power-btn">
+            <div class="indicator"></div>
+            <span id="powerText">Desligado</span>
+        </button>
+
+        <!-- Interval Control -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Intervalo entre pulsos</h2>
+                <span class="value-display" id="intervalValue">0.50 s</span>
+            </div>
+            <input type="range" id="intervalSlider" min="0.1" max="2.0" step="0.1" value="0.5">
+        </div>
+
+        <!-- Coarse Phase Control -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Defasagem (Ajuste Grosso)</h2>
+                <span class="value-display" id="coarseValue">0.0 s</span>
+            </div>
+            <input type="range" id="coarseSlider" min="-2.0" max="2.0" step="0.2" value="0.0">
+        </div>
+
+        <!-- Fine Phase Control (Knob) -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Defasagem (Ajuste Fino)</h2>
+                <span class="value-display" id="fineValue">0 ms</span>
+            </div>
+            <div class="knob-container">
+                <div class="knob-wrapper" id="knobWrapper">
+                    <div class="knob" id="knobElement">
+                        <div class="knob-indicator"></div>
+                        <div class="knob-center"></div>
+                    </div>
+                </div>
+                <p class="instructions">Arraste para cima/baixo ou em círculos para girar.<br>Múltiplas voltas
+                    suportadas.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const powerBtn = document.getElementById('powerBtn');
+        const powerText = document.getElementById('powerText');
+
+        const intervalSlider = document.getElementById('intervalSlider');
+        const intervalValue = document.getElementById('intervalValue');
+
+        const coarseSlider = document.getElementById('coarseSlider');
+        const coarseValue = document.getElementById('coarseValue');
+
+        const fineValueDisplay = document.getElementById('fineValue');
+        const knobElement = document.getElementById('knobElement');
+        const knobWrapper = document.getElementById('knobWrapper');
+
+        // State Variables
+        let isPlaying = false;
+        let audioCtx;
+
+        // Audio Engine Variables
+        const lookahead = 25.0; // ms
+        const scheduleAheadTime = 0.1; // s
+        let nextNoteTime = 0.0; // s
+        let timerID;
+
+        // Knob State
+        let finePhaseMs = 0; // -200 to +200 ms
+        let isDragging = false;
+        let startY = 0;
+        let startPhase = 0;
+
+        // Wake Lock
+        let wakeLock = null;
+
+        // -------------------------
+        // UI Interaction Handlers
+        // -------------------------
+
+        intervalSlider.addEventListener('input', (e) => {
+            intervalValue.textContent = parseFloat(e.target.value).toFixed(2) + ' s';
+        });
+
+        coarseSlider.addEventListener('input', (e) => {
+            let val = parseFloat(e.target.value);
+            coarseValue.textContent = (val > 0 ? '+' : '') + val.toFixed(1) + ' s';
+        });
+
+        // Knob Logic (Vertical drag)
+        knobWrapper.addEventListener('pointerdown', (e) => {
+            isDragging = true;
+            startY = e.clientY;
+            startPhase = finePhaseMs;
+            knobElement.style.transition = 'none';
+        });
+
+        document.addEventListener('pointermove', (e) => {
+            if (!isDragging) return;
+
+            // 1 pixel = 1 ms (makes it easy to fine tune)
+            const deltaY = startY - e.clientY;
+
+            // Calculate new value and snap to step of 5
+            let newPhase = startPhase + deltaY;
+            newPhase = Math.round(newPhase / 5) * 5;
+
+            // Clamp to -200 and +200
+            newPhase = Math.max(-200, Math.min(200, newPhase));
+
+            finePhaseMs = newPhase;
+            updateKnobVisuals();
+        });
+
+        document.addEventListener('pointerup', () => {
+            isDragging = false;
+        });
+
+        function updateKnobVisuals() {
+            // Visual rotation: 360 degrees = 100 ms (so 2 turns in each direction)
+            const rotationDeg = (finePhaseMs / 100) * 360;
+            knobElement.style.transform = `rotate(${rotationDeg}deg)`;
+            fineValueDisplay.textContent = (finePhaseMs > 0 ? '+' : '') + finePhaseMs + ' ms';
+        }
+
+        // -------------------------
+        // Audio Engine Logic
+        // -------------------------
+
+        function nextNote() {
+            const secondsPerBeat = parseFloat(intervalSlider.value);
+            nextNoteTime += secondsPerBeat;
+        }
+
+        function scheduleNote(time) {
+            if (!audioCtx) return;
+
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+
+            // Configurar um ruído percussivo: Estalo (click) de alta frequência
+            osc.type = 'square';
+            osc.frequency.value = 800; // Agudo para superar efeito Haas facilmente
+
+            // Envelope exponencial rápido (Attack curto, Decay rápido)
+            gainNode.gain.setValueAtTime(0, time);
+            gainNode.gain.linearRampToValueAtTime(1, time + 0.001); // 1ms attack
+            gainNode.gain.exponentialRampToValueAtTime(0.001, time + 0.010); // 10ms decay
+
+            osc.start(time);
+            osc.stop(time + 0.015);
+        }
+
+        function scheduler() {
+            if (!isPlaying) return;
+
+            while (nextNoteTime < audioCtx.currentTime + scheduleAheadTime) {
+                const coarseShift = parseFloat(coarseSlider.value); // sec
+                const fineShift = finePhaseMs / 1000.0; // sec
+                const totalShift = coarseShift + fineShift;
+
+                // O agendamento leva em conta o shift absoluto sem alterar o relógio base (nextNoteTime)
+                const scheduledPlayTime = nextNoteTime + totalShift;
+
+                // Evitar tocar no passado caso o shift traga o tempo para trás demais
+                if (scheduledPlayTime > audioCtx.currentTime) {
+                    scheduleNote(scheduledPlayTime);
+                }
+
+                nextNote();
+            }
+            timerID = setTimeout(scheduler, lookahead);
+        }
+
+        // -------------------------
+        // Play/Pause & Wake Lock
+        // -------------------------
+
+        async function requestWakeLock() {
+            try {
+                if ('wakeLock' in navigator) {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                    console.log('Wake Lock ativo.');
+                }
+            } catch (err) {
+                console.error(`Wake Lock error: ${err.name}, ${err.message}`);
+            }
+        }
+
+        function releaseWakeLock() {
+            if (wakeLock !== null) {
+                wakeLock.release()
+                    .then(() => { wakeLock = null; });
+            }
+        }
+
+        powerBtn.addEventListener('click', async () => {
+            if (!isPlaying) {
+                // Turn ON
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+
+                if (audioCtx.state === 'suspended') {
+                    await audioCtx.resume();
+                }
+
+                isPlaying = true;
+                powerBtn.classList.add('active');
+                powerText.textContent = "Ligado";
+
+                // Reset clock to current time + small delay
+                nextNoteTime = audioCtx.currentTime + 0.05;
+                scheduler();
+
+                requestWakeLock();
+            } else {
+                // Turn OFF
+                isPlaying = false;
+                clearTimeout(timerID);
+                powerBtn.classList.remove('active');
+                powerText.textContent = "Desligado";
+
+                releaseWakeLock();
+            }
+        });
+
+        // -------------------------
+        // Service Worker Registration
+        // -------------------------
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').then((registration) => {
+                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                }, (err) => {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            });
+        }
+
+    </script>
+</body>
+
+</html>

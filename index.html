@@ -369,10 +369,10 @@
             <!-- Modo de Operação Sonora -->
             <div class="card">
                 <div class="card-header">
-                    <h2 class="card-title">Modo de Sinal (Io vs Terra)</h2>
+                    <h2 class="card-title">Modo de Som (Assinatura)</h2>
                 </div>
                 <select id="modeSelect">
-                    <option value="livre">Idênticos (Livre)</option>
+                    <option value="livre">Livre (Senoide)</option>
                     <option value="dissonante">Dissonância (+15 Hz)</option>
                     <option value="oitava">Oitava Distinta (F e 2F)</option>
                     <option value="ruido" selected>Ruído Branco (Segregação)</option>
@@ -385,7 +385,7 @@
             <!-- Frequency Control -->
             <div class="card">
                 <div class="card-header">
-                    <h2 class="card-title">Frequência Portadora (Terra)</h2>
+                    <h2 class="card-title">Frequência Portadora</h2>
                     <span class="value-display" id="freqValue">3000 Hz</span>
                 </div>
                 <input type="range" id="freqSlider" min="500" max="4000" step="50" value="3000">
@@ -444,8 +444,8 @@
 
         // Audio Engine Variables
         const lookahead = 25.0; // ms
-        const scheduleAheadTime = 0.5; // s (Aumentado para garantir margem para tempos negativos grandes)
-        let nextNoteTime = 0.0; // s (Tempo Base = Terra)
+        const scheduleAheadTime = 0.5; // s (Margem para garantir tempos negativos grandes durante a defasagem)
+        let nextNoteTime = 0.0; // s (Referência de tempo para o próximo pulso)
         let timerID;
 
         // Master nodes
@@ -498,8 +498,7 @@
         volumeSlider.addEventListener('input', (e) => {
             volumeValue.textContent = e.target.value + '%';
             if (masterGainNode) {
-                // Atenuação de segurança por conta de 2 sinais sobrepostos
-                let baseGain = parseFloat(e.target.value) / 100 * 0.5;
+                let baseGain = parseFloat(e.target.value) / 100;
                 masterGainNode.gain.setTargetAtTime(baseGain, audioCtx.currentTime, 0.02);
             }
         });
@@ -587,34 +586,29 @@
             const fineShift = finePhaseMs / 1000.0; // sec
             const totalShift = coarseShift + fineShift;
 
-            // earliestTime verifica qual som ocorrerá primeiro (Terra ou Io)
-            // Isso previne que um atraso negativo profundo seja ignorado pelo lookahead
-            let earliestTime = nextNoteTime + Math.min(0, totalShift);
+            // earliestTime é o tempo de emissão do pulso agendado (com sua defasagem)
+            let earliestTime = nextNoteTime + totalShift;
 
             while (earliestTime < audioCtx.currentTime + scheduleAheadTime) {
 
-                const earthTime = nextNoteTime;
-                const ioTime = nextNoteTime + totalShift;
+                const pulseTime = nextNoteTime + totalShift;
                 const baseFreq = parseFloat(freqSlider.value);
                 const mode = modeSelect.value;
 
-                // Emissão da Terra (Referência constante)
-                scheduleTone(earthTime, baseFreq, 'sine');
-
-                // Emissão de Io (Variável em tempo e dependente do modo escolhido)
+                // Emissão de Pulso (Variável em tempo e dependente do modo escolhido)
                 if (mode === 'livre') {
-                    scheduleTone(ioTime, baseFreq, 'sine');
+                    scheduleTone(pulseTime, baseFreq, 'sine');
                 } else if (mode === 'dissonante') {
-                    scheduleTone(ioTime, baseFreq + 15, 'sine');
+                    scheduleTone(pulseTime, baseFreq + 15, 'sine');
                 } else if (mode === 'oitava') {
-                    scheduleTone(ioTime, baseFreq * 2, 'sine');
+                    scheduleTone(pulseTime, baseFreq * 2, 'sine');
                 } else if (mode === 'ruido') {
-                    scheduleTone(ioTime, 0, 'noise');
+                    scheduleTone(pulseTime, 0, 'noise');
                 }
 
                 // Avança o relógio base para o próximo ciclo
                 nextNoteTime += parseFloat(intervalSlider.value);
-                earliestTime = nextNoteTime + Math.min(0, totalShift);
+                earliestTime = nextNoteTime + totalShift;
             }
 
             timerID = setTimeout(scheduler, lookahead);
@@ -647,8 +641,8 @@
                     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
                     masterGainNode = audioCtx.createGain();
-                    // O ganho base é reduzido para acomodar a soma algébrica de duas senoides (Terra + Io)
-                    masterGainNode.gain.value = parseFloat(volumeSlider.value) / 100 * 0.5;
+                    // O ganho base é normalizado para um único sinal
+                    masterGainNode.gain.value = parseFloat(volumeSlider.value) / 100;
 
                     limiter = audioCtx.createDynamicsCompressor();
                     limiter.threshold.setValueAtTime(-1.0, audioCtx.currentTime);

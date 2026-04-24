@@ -17,6 +17,7 @@
             --text-muted: #8b92a5;
             --danger: #ff4757;
             --success: #2ed573;
+            --tab-bg: #222630;
         }
 
         * {
@@ -70,37 +71,7 @@
             display: flex;
             flex-direction: column;
             gap: 20px;
-        }
-
-        .card {
-            background-color: var(--card-bg);
-            border-radius: 16px;
-            padding: 20px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .card-title {
-            font-size: 1rem;
-            font-weight: 500;
-            color: var(--text-main);
-            margin: 0;
-        }
-
-        .value-display {
-            font-family: monospace;
-            font-size: 1.1rem;
-            color: var(--accent);
-            background: rgba(0, 229, 255, 0.1);
-            padding: 4px 10px;
-            border-radius: 6px;
+            margin-bottom: 40px;
         }
 
         /* Power Button */
@@ -141,7 +112,86 @@
             background-color: #000;
         }
 
-        /* Sliders */
+        /* Tabs System */
+        .tabs-nav {
+            display: flex;
+            background-color: var(--tab-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 5px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            background-color: var(--card-bg);
+            color: var(--accent);
+            border-bottom: 2px solid var(--accent);
+        }
+
+        .tab-content {
+            display: none;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .tab-content.active {
+            display: flex;
+        }
+
+        /* Cards and Controls */
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-main);
+            margin: 0;
+        }
+
+        .value-display {
+            font-family: monospace;
+            font-size: 1.1rem;
+            color: var(--accent);
+            background: rgba(0, 229, 255, 0.1);
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px;
+            background-color: #2f3640;
+            color: var(--text-main);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            cursor: pointer;
+        }
+
         input[type=range] {
             -webkit-appearance: none;
             width: 100%;
@@ -187,7 +237,6 @@
             justify-content: center;
             align-items: center;
             touch-action: none;
-            /* Prevent scroll on touch */
         }
 
         .knob {
@@ -258,59 +307,105 @@
             <span id="powerText">Desligado</span>
         </button>
 
-        <!-- Interval Control -->
-        <div class="card">
-            <div class="card-header">
-                <h2 class="card-title">Intervalo entre pulsos</h2>
-                <span class="value-display" id="intervalValue">0.50 s</span>
-            </div>
-            <input type="range" id="intervalSlider" min="0.1" max="2.0" step="0.1" value="0.5">
+        <!-- Navigation Tabs -->
+        <div class="tabs-nav">
+            <button class="tab-btn active" data-target="tab-controls">Controles</button>
+            <button class="tab-btn" data-target="tab-params">Parâmetros</button>
         </div>
 
-        <!-- Frequency Control -->
-        <div class="card">
-            <div class="card-header">
-                <h2 class="card-title">Frequência da batida</h2>
-                <span class="value-display" id="freqValue">1000 Hz</span>
-            </div>
-            <input type="range" id="freqSlider" min="500" max="3000" step="100" value="1000">
-        </div>
+        <!-- ABA 1: CONTROLES -->
+        <div id="tab-controls" class="tab-content active">
 
-        <!-- Volume Master -->
-        <div class="card">
-            <div class="card-header">
-                <h2 class="card-title">Volume Master (Boost)</h2>
-                <span class="value-display" id="volumeValue">100%</span>
-            </div>
-            <input type="range" id="volumeSlider" min="0" max="200" step="5" value="100">
-        </div>
-
-        <!-- Coarse Phase Control -->
-        <div class="card">
-            <div class="card-header">
-                <h2 class="card-title">Defasagem (Ajuste Grosso)</h2>
-                <span class="value-display" id="coarseValue">0.0 s</span>
-            </div>
-            <input type="range" id="coarseSlider" min="-2.0" max="2.0" step="0.2" value="0.0">
-        </div>
-
-        <!-- Fine Phase Control (Knob) -->
-        <div class="card">
-            <div class="card-header">
-                <h2 class="card-title">Defasagem (Ajuste Fino)</h2>
-                <span class="value-display" id="fineValue">0 ms</span>
-            </div>
-            <div class="knob-container">
-                <div class="knob-wrapper" id="knobWrapper">
-                    <div class="knob" id="knobElement">
-                        <div class="knob-indicator"></div>
-                        <div class="knob-center"></div>
-                    </div>
+            <!-- Interval Control -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Intervalo Base (Período)</h2>
+                    <span class="value-display" id="intervalValue">1.00 s</span>
                 </div>
-                <p class="instructions">Arraste para cima/baixo ou em círculos para girar.<br>Múltiplas voltas
-                    suportadas.</p>
+                <input type="range" id="intervalSlider" min="0.1" max="2.0" step="0.1" value="1.0">
             </div>
+
+            <!-- Coarse Phase Control (Passo de 50ms = 0.05s) -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Defasagem (Ajuste Grosso)</h2>
+                    <span class="value-display" id="coarseValue">0.00 s</span>
+                </div>
+                <input type="range" id="coarseSlider" min="-2.0" max="2.0" step="0.05" value="0.0">
+            </div>
+
+            <!-- Fine Phase Control (Knob) (Passo de 1ms) -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Defasagem (Ajuste Fino)</h2>
+                    <span class="value-display" id="fineValue">0 ms</span>
+                </div>
+                <div class="knob-container">
+                    <div class="knob-wrapper" id="knobWrapper">
+                        <div class="knob" id="knobElement">
+                            <div class="knob-indicator"></div>
+                            <div class="knob-center"></div>
+                        </div>
+                    </div>
+                    <p class="instructions">Arraste para cima/baixo para girar.<br>Ajuste milimétrico (1 ms por passo).
+                    </p>
+                </div>
+            </div>
+
+            <!-- Volume Master -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Volume Master</h2>
+                    <span class="value-display" id="volumeValue">100%</span>
+                </div>
+                <input type="range" id="volumeSlider" min="0" max="200" step="5" value="100">
+            </div>
+
         </div>
+
+        <!-- ABA 2: PARÂMETROS PSICOACÚSTICOS -->
+        <div id="tab-params" class="tab-content">
+
+            <!-- Modo de Operação Sonora -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Modo de Sinal (Io vs Terra)</h2>
+                </div>
+                <select id="modeSelect">
+                    <option value="livre">Idênticos (Livre)</option>
+                    <option value="dissonante">Dissonância (+15 Hz)</option>
+                    <option value="oitava">Oitava Distinta (F e 2F)</option>
+                    <option value="ruido" selected>Ruído Branco (Segregação)</option>
+                </select>
+                <p class="instructions" style="text-align:left; margin-top:10px;">
+                    Define a técnica psicoacústica para destacar a defasagem temporal quando próxima de zero.
+                </p>
+            </div>
+
+            <!-- Frequency Control -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Frequência Portadora (Terra)</h2>
+                    <span class="value-display" id="freqValue">3000 Hz</span>
+                </div>
+                <input type="range" id="freqSlider" min="500" max="4000" step="50" value="3000">
+            </div>
+
+            <!-- Decay Time Control -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Decaimento do Envelope</h2>
+                    <span class="value-display" id="decayValue">15 ms</span>
+                </div>
+                <input type="range" id="decaySlider" min="5" max="100" step="1" value="15">
+                <p class="instructions" style="text-align:left; margin-top:10px;">
+                    Duração exponencial. Valores curtos (15ms) são ideais para evitar cancelamento de fase por ecos no
+                    chão e resistir à distância.
+                </p>
+            </div>
+
+        </div>
+
     </div>
 
     <script>
@@ -318,11 +413,13 @@
         const powerBtn = document.getElementById('powerBtn');
         const powerText = document.getElementById('powerText');
 
+        // Tab Elements
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        // Controles Elements
         const intervalSlider = document.getElementById('intervalSlider');
         const intervalValue = document.getElementById('intervalValue');
-
-        const freqSlider = document.getElementById('freqSlider');
-        const freqValue = document.getElementById('freqValue');
 
         const coarseSlider = document.getElementById('coarseSlider');
         const coarseValue = document.getElementById('coarseValue');
@@ -334,19 +431,27 @@
         const knobElement = document.getElementById('knobElement');
         const knobWrapper = document.getElementById('knobWrapper');
 
+        // Parâmetros Elements
+        const modeSelect = document.getElementById('modeSelect');
+        const freqSlider = document.getElementById('freqSlider');
+        const freqValue = document.getElementById('freqValue');
+        const decaySlider = document.getElementById('decaySlider');
+        const decayValue = document.getElementById('decayValue');
+
         // State Variables
         let isPlaying = false;
         let audioCtx;
 
         // Audio Engine Variables
         const lookahead = 25.0; // ms
-        const scheduleAheadTime = 0.1; // s
-        let nextNoteTime = 0.0; // s
+        const scheduleAheadTime = 0.5; // s (Aumentado para garantir margem para tempos negativos grandes)
+        let nextNoteTime = 0.0; // s (Tempo Base = Terra)
         let timerID;
 
-        // Master nodes for loudness maximization
+        // Master nodes
         let masterGainNode;
         let limiter;
+        let noiseBuffer;
 
         // Knob State
         let finePhaseMs = 0; // -200 to +200 ms
@@ -361,23 +466,41 @@
         // UI Interaction Handlers
         // -------------------------
 
+        // Tabs Logic
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                tabBtns.forEach(b => b.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+
+                btn.classList.add('active');
+                document.getElementById(btn.getAttribute('data-target')).classList.add('active');
+            });
+        });
+
+        // Sliders Text Updates
         intervalSlider.addEventListener('input', (e) => {
             intervalValue.textContent = parseFloat(e.target.value).toFixed(2) + ' s';
+        });
+
+        coarseSlider.addEventListener('input', (e) => {
+            let val = parseFloat(e.target.value);
+            coarseValue.textContent = (val > 0 ? '+' : '') + val.toFixed(2) + ' s';
         });
 
         freqSlider.addEventListener('input', (e) => {
             freqValue.textContent = e.target.value + ' Hz';
         });
 
-        coarseSlider.addEventListener('input', (e) => {
-            let val = parseFloat(e.target.value);
-            coarseValue.textContent = (val > 0 ? '+' : '') + val.toFixed(1) + ' s';
+        decaySlider.addEventListener('input', (e) => {
+            decayValue.textContent = e.target.value + ' ms';
         });
 
         volumeSlider.addEventListener('input', (e) => {
             volumeValue.textContent = e.target.value + '%';
             if (masterGainNode) {
-                masterGainNode.gain.setTargetAtTime(parseFloat(e.target.value) / 100, audioCtx.currentTime, 0.02);
+                // Atenuação de segurança por conta de 2 sinais sobrepostos
+                let baseGain = parseFloat(e.target.value) / 100 * 0.5;
+                masterGainNode.gain.setTargetAtTime(baseGain, audioCtx.currentTime, 0.02);
             }
         });
 
@@ -392,14 +515,11 @@
         document.addEventListener('pointermove', (e) => {
             if (!isDragging) return;
 
-            // 1 pixel = 1 ms (makes it easy to fine tune)
             const deltaY = startY - e.clientY;
+            // Sensibilidade do Knob: passo exato de 1 ms
+            let newPhase = Math.round(startPhase + (deltaY * 0.8));
 
-            // Calculate new value and snap to step of 5
-            let newPhase = startPhase + deltaY;
-            newPhase = Math.round(newPhase / 5) * 5;
-
-            // Clamp to -200 and +200
+            // Clamp -200 a +200 ms
             newPhase = Math.max(-200, Math.min(200, newPhase));
 
             finePhaseMs = newPhase;
@@ -411,7 +531,7 @@
         });
 
         function updateKnobVisuals() {
-            // Visual rotation: 360 degrees = 100 ms (so 2 turns in each direction)
+            // Visual rotation: 360 degrees = 100 ms
             const rotationDeg = (finePhaseMs / 100) * 360;
             knobElement.style.transform = `rotate(${rotationDeg}deg)`;
             fineValueDisplay.textContent = (finePhaseMs > 0 ? '+' : '') + finePhaseMs + ' ms';
@@ -421,53 +541,82 @@
         // Audio Engine Logic
         // -------------------------
 
-        function nextNote() {
-            const secondsPerBeat = parseFloat(intervalSlider.value);
-            nextNoteTime += secondsPerBeat;
+        function createNoiseBuffer() {
+            // Cria buffer de ruído branco de 0.5 segundos
+            const bufferSize = audioCtx.sampleRate * 0.5;
+            noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const output = noiseBuffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                output[i] = Math.random() * 2 - 1;
+            }
         }
 
-        function scheduleNote(time) {
+        function scheduleTone(time, frequency, type) {
             if (!audioCtx) return;
 
-            const osc = audioCtx.createOscillator();
+            const decaySec = parseFloat(decaySlider.value) / 1000.0;
             const envelopeGain = audioCtx.createGain();
-
-            osc.connect(envelopeGain);
             envelopeGain.connect(masterGainNode);
 
-            // Tipo 'square' já entrega a maior potência média (RMS) possível
-            osc.type = 'square';
-            osc.frequency.value = parseFloat(freqSlider.value);
+            // Envelope otimizado: Ataque muito rápido (mas não 0 para evitar click indesejado)
+            // Decaimento exponencial perfeito para mitigar reverberação/ground bounce
+            envelopeGain.gain.setValueAtTime(0.0001, time);
+            envelopeGain.gain.exponentialRampToValueAtTime(1.0, time + 0.001);
+            envelopeGain.gain.exponentialRampToValueAtTime(0.0001, time + decaySec);
 
-            // Envelope otimizado para maior "corpo" (percepção de volume)
-            // Aumentamos o tempo de sustentação e o decay para carregar mais energia sonora
-            envelopeGain.gain.setValueAtTime(0, time);
-            envelopeGain.gain.linearRampToValueAtTime(1.0, time + 0.002); // Attack ultra-rápido
-            envelopeGain.gain.setValueAtTime(1.0, time + 0.015); // "Hold" para dar corpo ao estalo
-            envelopeGain.gain.exponentialRampToValueAtTime(0.001, time + 0.060); // Decay mais longo (60ms)
+            let source;
 
-            osc.start(time);
-            osc.stop(time + 0.080); // Garante que o som dure o suficiente
+            if (type === 'noise') {
+                source = audioCtx.createBufferSource();
+                source.buffer = noiseBuffer;
+            } else {
+                source = audioCtx.createOscillator();
+                source.type = type; // 'sine'
+                source.frequency.value = frequency;
+            }
+
+            source.connect(envelopeGain);
+            source.start(time);
+            source.stop(time + decaySec + 0.01);
         }
 
         function scheduler() {
             if (!isPlaying) return;
 
-            while (nextNoteTime < audioCtx.currentTime + scheduleAheadTime) {
-                const coarseShift = parseFloat(coarseSlider.value); // sec
-                const fineShift = finePhaseMs / 1000.0; // sec
-                const totalShift = coarseShift + fineShift;
+            const coarseShift = parseFloat(coarseSlider.value); // sec
+            const fineShift = finePhaseMs / 1000.0; // sec
+            const totalShift = coarseShift + fineShift;
 
-                // O agendamento leva em conta o shift absoluto sem alterar o relógio base (nextNoteTime)
-                const scheduledPlayTime = nextNoteTime + totalShift;
+            // earliestTime verifica qual som ocorrerá primeiro (Terra ou Io)
+            // Isso previne que um atraso negativo profundo seja ignorado pelo lookahead
+            let earliestTime = nextNoteTime + Math.min(0, totalShift);
 
-                // Evitar tocar no passado caso o shift traga o tempo para trás demais
-                if (scheduledPlayTime > audioCtx.currentTime) {
-                    scheduleNote(scheduledPlayTime);
+            while (earliestTime < audioCtx.currentTime + scheduleAheadTime) {
+
+                const earthTime = nextNoteTime;
+                const ioTime = nextNoteTime + totalShift;
+                const baseFreq = parseFloat(freqSlider.value);
+                const mode = modeSelect.value;
+
+                // Emissão da Terra (Referência constante)
+                scheduleTone(earthTime, baseFreq, 'sine');
+
+                // Emissão de Io (Variável em tempo e dependente do modo escolhido)
+                if (mode === 'livre') {
+                    scheduleTone(ioTime, baseFreq, 'sine');
+                } else if (mode === 'dissonante') {
+                    scheduleTone(ioTime, baseFreq + 15, 'sine');
+                } else if (mode === 'oitava') {
+                    scheduleTone(ioTime, baseFreq * 2, 'sine');
+                } else if (mode === 'ruido') {
+                    scheduleTone(ioTime, 0, 'noise');
                 }
 
-                nextNote();
+                // Avança o relógio base para o próximo ciclo
+                nextNoteTime += parseFloat(intervalSlider.value);
+                earliestTime = nextNoteTime + Math.min(0, totalShift);
             }
+
             timerID = setTimeout(scheduler, lookahead);
         }
 
@@ -479,17 +628,15 @@
             try {
                 if ('wakeLock' in navigator) {
                     wakeLock = await navigator.wakeLock.request('screen');
-                    console.log('Wake Lock ativo.');
                 }
             } catch (err) {
-                console.error(`Wake Lock error: ${err.name}, ${err.message}`);
+                console.error(`Wake Lock error: ${err.name}`);
             }
         }
 
         function releaseWakeLock() {
             if (wakeLock !== null) {
-                wakeLock.release()
-                    .then(() => { wakeLock = null; });
+                wakeLock.release().then(() => { wakeLock = null; });
             }
         }
 
@@ -498,22 +645,22 @@
                 // Turn ON
                 if (!audioCtx) {
                     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                    
-                    // Configuração da cadeia de saída master:
-                    // Oscilador -> Envelope -> MasterGain -> Limiter -> Destino
+
                     masterGainNode = audioCtx.createGain();
-                    masterGainNode.gain.value = parseFloat(volumeSlider.value) / 100;
-                    
+                    // O ganho base é reduzido para acomodar a soma algébrica de duas senoides (Terra + Io)
+                    masterGainNode.gain.value = parseFloat(volumeSlider.value) / 100 * 0.5;
+
                     limiter = audioCtx.createDynamicsCompressor();
-                    // Configuração agressiva do limiter para maximizar volume sem clipping digital "feio"
-                    limiter.threshold.setValueAtTime(-1.0, audioCtx.currentTime); // Atua próximo ao teto
-                    limiter.knee.setValueAtTime(0, audioCtx.currentTime); // Hard knee
-                    limiter.ratio.setValueAtTime(20, audioCtx.currentTime); // Ratio de limiter
+                    limiter.threshold.setValueAtTime(-1.0, audioCtx.currentTime);
+                    limiter.knee.setValueAtTime(0, audioCtx.currentTime);
+                    limiter.ratio.setValueAtTime(20, audioCtx.currentTime);
                     limiter.attack.setValueAtTime(0, audioCtx.currentTime);
                     limiter.release.setValueAtTime(0.1, audioCtx.currentTime);
-                    
+
                     masterGainNode.connect(limiter);
                     limiter.connect(audioCtx.destination);
+
+                    createNoiseBuffer();
                 }
 
                 if (audioCtx.state === 'suspended') {
@@ -524,8 +671,10 @@
                 powerBtn.classList.add('active');
                 powerText.textContent = "Ligado";
 
-                // Reset clock to current time + small delay
-                nextNoteTime = audioCtx.currentTime + 0.05;
+                // Para corrigir o bug de tempos negativos iniciais, inicializamos nextNoteTime
+                // sempre bem no futuro para garantir que a subtração máxima de fase (-2.2s) 
+                // não agende eventos no passado (o que faz o web audio tocar instantaneamente)
+                nextNoteTime = audioCtx.currentTime + 3.0;
                 scheduler();
 
                 requestWakeLock();
@@ -546,9 +695,9 @@
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js').then((registration) => {
-                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
-                }, (err) => {
-                    console.log('ServiceWorker registration failed: ', err);
+                    console.log('SW registration successful');
+                }).catch((err) => {
+                    console.log('SW registration failed: ', err);
                 });
             });
         }

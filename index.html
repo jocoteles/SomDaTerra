@@ -822,20 +822,24 @@
             const envelopeGain = audioCtx.createGain();
             envelopeGain.connect(masterGainNode);
 
-            // Envelope original: puro decaimento exponencial contínuo e responsivo
+            // Garante silêncio absoluto 10ms antes do pulso acontecer
+            envelopeGain.gain.setValueAtTime(0.0001, time - 0.010);
+
+            // Dispara o envelope de volume no momento exato (time)
             envelopeGain.gain.setValueAtTime(0.0001, time);
             envelopeGain.gain.exponentialRampToValueAtTime(1.0, time + 0.001);
             envelopeGain.gain.exponentialRampToValueAtTime(0.0001, time + decaySec);
 
             const osc = audioCtx.createOscillator();
             osc.type = 'sine';
-            osc.frequency.setValueAtTime(frequency, time);
+            osc.frequency.setValueAtTime(frequency, time - 0.010);
 
             osc.connect(envelopeGain);
-            osc.start(time);
-            osc.stop(time + decaySec + 0.01);
-        }
 
+            // Liga o oscilador 10ms ANTES em silêncio para neutralizar o bug de bloco do navegador
+            osc.start(time - 0.010);
+            osc.stop(time + decaySec + 0.02);
+        }
         /**
          * O motor de agendamento (scheduler) alinha matematicamente as batidas em relação à Época UNIX (Epoch).
          * Dois dispositivos executando este código em qualquer lugar do mundo estarão sintonizados no mesmo grid absoluto temporal
@@ -850,31 +854,31 @@
 
             const nowAudio = audioCtx.currentTime;
 
-            // Determina em qual índice da grade absoluta o tempo de áudio atual se encontra
-            const targetSystemTime = nowAudio + epochOffset - totalShift;
-            let k = Math.ceil(targetSystemTime / period);
+            // Margem mínima de segurança (100ms). Garante que nenhuma batida seja agendada
+            // "em cima da hora", eliminando qualquer descontinuidade ou ruído de truncamento.
+            const safetyBuffer = 0.100; // 100 ms
+
+            // Calcula o primeiro índice k garantindo que ele caia pelo menos 100ms no futuro
+            const minSystemTime = nowAudio + safetyBuffer + epochOffset - totalShift;
+            let k = Math.ceil(minSystemTime / period);
 
             while (true) {
                 const pulseTimeSystem = k * period;
-                // O cálculo do tempo de áudio agora usa o 'epochOffset' fixo, mantendo a distância exata de 'period'
                 const pulseTimeAudio = pulseTimeSystem - epochOffset + totalShift;
 
-                // Para se o tempo estimado ultrapassar a janela de agendamento antecipado
-                if (pulseTimeAudio > nowAudio + scheduleAheadTime) {
+                // Horizonte de agendamento de 500ms (idêntico à folga segura do código original)
+                if (pulseTimeAudio > nowAudio + 0.5) {
                     break;
                 }
 
-                // Agenda se o evento estiver na janela válida e não tiver sido enviado ainda
-                if (pulseTimeAudio >= nowAudio - 0.05) {
-                    if (!scheduledIndices.has(k)) {
-                        scheduleTone(pulseTimeAudio, parseFloat(freqSlider.value));
-                        scheduledIndices.add(k);
-                    }
+                if (!scheduledIndices.has(k)) {
+                    scheduleTone(pulseTimeAudio, parseFloat(freqSlider.value));
+                    scheduledIndices.add(k);
                 }
                 k++;
             }
 
-            // Garbage collector de batidas agendadas passadas para evitar saturação de memória
+            // Limpeza de memória das batidas passadas
             const nowSystem = nowAudio + epochOffset;
             const minK = Math.floor((nowSystem - 5) / period);
             for (const key of scheduledIndices) {

@@ -58,12 +58,6 @@
             text-shadow: 0 0 10px var(--accent-glow);
         }
 
-        header p {
-            margin: 5px 0 0;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-        }
-
         .container {
             width: 100%;
             max-width: 400px;
@@ -178,18 +172,8 @@
             background: rgba(0, 229, 255, 0.1);
             padding: 4px 10px;
             border-radius: 6px;
-        }
-
-        select {
-            width: 100%;
-            padding: 12px;
-            background-color: #2f3640;
-            color: var(--text-main);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            font-size: 1rem;
-            outline: none;
-            cursor: pointer;
+            min-width: 80px;
+            text-align: center;
         }
 
         input[type=range] {
@@ -221,66 +205,293 @@
             box-shadow: 0 0 10px var(--accent-glow);
         }
 
-        /* Knob Controls */
-        .knob-container {
+        /* Vertical Sliders Styling */
+        .sliders-pair-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            width: 100%;
+            padding: 10px 0;
+        }
+
+        .vertical-control-wrapper {
             display: flex;
             flex-direction: column;
             align-items: center;
-            margin-top: 10px;
+            gap: 15px;
         }
 
-        .knob-wrapper {
-            position: relative;
-            width: 140px;
-            height: 140px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            touch-action: none;
+        .control-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        .knob {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            background: conic-gradient(from 180deg at 50% 50%, #2a2e38 0deg, #1f222b 360deg);
-            box-shadow:
-                inset 0 2px 4px rgba(255, 255, 255, 0.1),
-                inset 0 -2px 4px rgba(0, 0, 0, 0.5),
-                0 10px 20px rgba(0, 0, 0, 0.4);
-            border: 2px solid #3a3f4d;
+        /* Drum Wheel Style */
+        .wheel-control {
+            width: 80px;
+            height: 200px;
+            background: #15181e;
+            border: 3px solid #3a3f4d;
+            border-radius: 12px;
             position: relative;
-            transform-origin: center;
-            will-change: transform;
+            overflow: hidden;
             cursor: grab;
+            touch-action: none;
+            box-shadow:
+                inset 0 15px 15px rgba(0, 0, 0, 0.8),
+                inset 0 -15px 15px rgba(0, 0, 0, 0.8),
+                0 4px 10px rgba(0, 0, 0, 0.5);
         }
 
-        .knob:active {
+        .wheel-control:active {
             cursor: grabbing;
         }
 
-        .knob-indicator {
+        .wheel-ribs {
             position: absolute;
-            top: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 6px;
-            height: 20px;
-            background: var(--accent);
-            border-radius: 3px;
-            box-shadow: 0 0 8px var(--accent);
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            background-image: repeating-linear-gradient(to bottom,
+                    rgba(255, 255, 255, 0.05) 0px,
+                    rgba(255, 255, 255, 0.05) 1px,
+                    transparent 2px,
+                    transparent 15px,
+                    rgba(0, 0, 0, 0.4) 16px,
+                    rgba(0, 0, 0, 0.6) 18px,
+                    transparent 19px,
+                    transparent 30px);
+            background-position-y: 0px;
         }
 
-        .knob-center {
+        .wheel-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            background: linear-gradient(to bottom,
+                    rgba(15, 17, 21, 0.95) 0%,
+                    rgba(15, 17, 21, 0.4) 15%,
+                    transparent 40%,
+                    transparent 60%,
+                    rgba(15, 17, 21, 0.4) 85%,
+                    rgba(15, 17, 21, 0.95) 100%);
+        }
+
+        .wheel-center-line {
             position: absolute;
             top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 40px;
-            height: 40px;
-            background: #15181e;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--accent);
+            box-shadow: 0 0 8px var(--accent);
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .gain-slider-container {
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        input[type=range][orient=vertical] {
+            -webkit-appearance: slider-vertical;
+            writing-mode: vertical-lr;
+            direction: rtl;
+            width: 10px;
+            height: 200px;
+            background: #2f3640;
+            border-radius: 4px;
+            outline: none;
+        }
+
+        input[type=range][orient=vertical]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
-            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5);
+            background: var(--accent);
+            cursor: pointer;
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        input[type=range][orient=vertical]::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--accent);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        /* Registry Panel Table */
+        .btn-action {
+            padding: 8px 14px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            background-color: #2f3640;
+            color: var(--text-main);
+            font-size: 0.85rem;
+        }
+
+        .btn-action:hover {
+            background-color: #3e4450;
+        }
+
+        .btn-action.primary {
+            background-color: var(--accent);
+            color: #000;
+            font-weight: bold;
+        }
+
+        .btn-action.primary:hover {
+            background-color: #00b8d4;
+        }
+
+        .btn-action.danger {
+            background-color: rgba(255, 71, 87, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(255, 71, 87, 0.2);
+        }
+
+        .btn-action.danger:hover {
+            background-color: rgba(255, 71, 87, 0.2);
+        }
+
+        .table-container {
+            width: 100%;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            background: #15181e;
+            margin: 10px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: center;
+            font-size: 0.85rem;
+        }
+
+        th {
+            background-color: #1a1d24;
+            color: var(--text-muted);
+            padding: 10px;
+            font-weight: 600;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            position: sticky;
+            top: 0;
+        }
+
+        td {
+            padding: 8px 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+            color: var(--text-main);
+        }
+
+        tr:nth-child(even) td {
+            background-color: rgba(255, 255, 255, 0.01);
+        }
+
+        .btn-delete {
+            background: none;
+            border: none;
+            color: var(--danger);
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto;
+        }
+
+        .btn-delete:hover {
+            background-color: rgba(255, 71, 87, 0.1);
+        }
+
+        .records-footer {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .records-footer .btn-action {
+            flex: 1;
+        }
+
+        /* Toggle Switch styling */
+        .toggle-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider-toggle {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #2f3640;
+            transition: .3s;
+            border-radius: 34px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .slider-toggle:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: var(--text-main);
+            transition: .3s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider-toggle {
+            background-color: var(--accent);
+        }
+
+        input:checked+.slider-toggle:before {
+            transform: translateX(24px);
+            background-color: #000;
         }
 
         .instructions {
@@ -316,92 +527,107 @@
         <!-- ABA 1: CONTROLES -->
         <div id="tab-controls" class="tab-content active">
 
-            <!-- Interval Control -->
+            <!-- Pair of Vertical Controls (Wheel and Gain) -->
+            <div class="card">
+                <div class="sliders-pair-container">
+
+                    <!-- Left: Defasagem (Infinite Drum Wheel) -->
+                    <div class="vertical-control-wrapper">
+                        <span class="control-label">Defasagem</span>
+                        <div class="wheel-control" id="defasagemWheel">
+                            <div class="wheel-ribs" id="wheelRibs"></div>
+                            <div class="wheel-overlay"></div>
+                            <div class="wheel-center-line"></div>
+                        </div>
+                        <span class="value-display" id="defasagemValue">0 ms</span>
+                    </div>
+
+                    <!-- Right: Ganho (Standard Vertical Range) -->
+                    <div class="vertical-control-wrapper">
+                        <span class="control-label">Ganho</span>
+                        <div class="gain-slider-container">
+                            <input type="range" id="gainSlider" min="0" max="200" step="5" value="100"
+                                orient="vertical">
+                        </div>
+                        <span class="value-display" id="gainValue">100%</span>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Registry Panel -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Valores de Defasagem</h2>
+                    <button id="btnRegistrar" class="btn-action primary">Registrar</button>
+                </div>
+
+                <div class="table-container">
+                    <table id="recordsTable">
+                        <thead>
+                            <tr>
+                                <th>Nº</th>
+                                <th>Hora</th>
+                                <th>Defasagem</th>
+                                <th style="width: 45px;"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="recordsBody">
+                            <!-- Dynamically added rows -->
+                        </tbody>
+                    </table>
+                    <div id="noRecordsMsg" class="instructions" style="margin: 15px 0;">Nenhum registro encontrado.
+                    </div>
+                </div>
+
+                <div class="records-footer">
+                    <button id="btnSalvar" class="btn-action">Salvar</button>
+                    <button id="btnCopiar" class="btn-action">Copiar</button>
+                    <button id="btnLimpar" class="btn-action danger">Limpar</button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ABA 2: PARÂMETROS -->
+        <div id="tab-params" class="tab-content">
+
+            <!-- Interval Base (Período) (Moved here, step changed to 0.2s) -->
             <div class="card">
                 <div class="card-header">
                     <h2 class="card-title">Intervalo Base (Período)</h2>
                     <span class="value-display" id="intervalValue">1.00 s</span>
                 </div>
-                <input type="range" id="intervalSlider" min="0.1" max="2.0" step="0.1" value="1.0">
-            </div>
-
-            <!-- Coarse Phase Control (Passo de 50ms = 0.05s) -->
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">Defasagem (Ajuste Grosso)</h2>
-                    <span class="value-display" id="coarseValue">0.00 s</span>
-                </div>
-                <input type="range" id="coarseSlider" min="-2.0" max="2.0" step="0.05" value="0.0">
-            </div>
-
-            <!-- Fine Phase Control (Knob) (Passo de 1ms) -->
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">Defasagem (Ajuste Fino)</h2>
-                    <span class="value-display" id="fineValue">0 ms</span>
-                </div>
-                <div class="knob-container">
-                    <div class="knob-wrapper" id="knobWrapper">
-                        <div class="knob" id="knobElement">
-                            <div class="knob-indicator"></div>
-                            <div class="knob-center"></div>
-                        </div>
-                    </div>
-                    <p class="instructions">Arraste para cima/baixo para girar.<br>Ajuste milimétrico (1 ms por passo).
-                    </p>
-                </div>
-            </div>
-
-            <!-- Volume Master -->
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">Volume Master</h2>
-                    <span class="value-display" id="volumeValue">100%</span>
-                </div>
-                <input type="range" id="volumeSlider" min="0" max="200" step="5" value="100">
-            </div>
-
-        </div>
-
-        <!-- ABA 2: PARÂMETROS PSICOACÚSTICOS -->
-        <div id="tab-params" class="tab-content">
-
-            <!-- Modo de Operação Sonora -->
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">Modo de Som (Assinatura)</h2>
-                </div>
-                <select id="modeSelect">
-                    <option value="livre">Livre (Senoide)</option>
-                    <option value="dissonante">Dissonância (+15 Hz)</option>
-                    <option value="oitava">Oitava Distinta (F e 2F)</option>
-                    <option value="ruido" selected>Ruído Branco (Segregação)</option>
-                </select>
-                <p class="instructions" style="text-align:left; margin-top:10px;">
-                    Define a técnica psicoacústica para destacar a defasagem temporal quando próxima de zero.
-                </p>
+                <input type="range" id="intervalSlider" min="0.2" max="2.0" step="0.2" value="1.0">
             </div>
 
             <!-- Frequency Control -->
             <div class="card">
                 <div class="card-header">
                     <h2 class="card-title">Frequência Portadora</h2>
-                    <span class="value-display" id="freqValue">3000 Hz</span>
+                    <span class="value-display" id="freqValue">4000 Hz</span>
                 </div>
-                <input type="range" id="freqSlider" min="500" max="4000" step="50" value="3000">
+                <input type="range" id="freqSlider" min="3000" max="5000" step="200" value="4000">
             </div>
 
             <!-- Decay Time Control -->
             <div class="card">
                 <div class="card-header">
                     <h2 class="card-title">Decaimento do Envelope</h2>
-                    <span class="value-display" id="decayValue">15 ms</span>
+                    <span class="value-display" id="decayValue">50 ms</span>
                 </div>
-                <input type="range" id="decaySlider" min="5" max="100" step="1" value="15">
-                <p class="instructions" style="text-align:left; margin-top:10px;">
-                    Duração exponencial. Valores curtos (15ms) são ideais para evitar cancelamento de fase por ecos no
-                    chão e resistir à distância.
-                </p>
+                <input type="range" id="decaySlider" min="10" max="100" step="10" value="50">
+            </div>
+
+            <!-- Esconder registros Toggle -->
+            <div class="card">
+                <div class="toggle-container">
+                    <span class="control-label" style="color: var(--text-main);">Esconder registros</span>
+                    <label class="switch">
+                        <input type="checkbox" id="hideRecordsToggle">
+                        <span class="slider-toggle"></span>
+                    </label>
+                </div>
             </div>
 
         </div>
@@ -418,46 +644,55 @@
         const tabContents = document.querySelectorAll('.tab-content');
 
         // Controles Elements
-        const intervalSlider = document.getElementById('intervalSlider');
-        const intervalValue = document.getElementById('intervalValue');
-
-        const coarseSlider = document.getElementById('coarseSlider');
-        const coarseValue = document.getElementById('coarseValue');
-
-        const volumeSlider = document.getElementById('volumeSlider');
-        const volumeValue = document.getElementById('volumeValue');
-
-        const fineValueDisplay = document.getElementById('fineValue');
-        const knobElement = document.getElementById('knobElement');
-        const knobWrapper = document.getElementById('knobWrapper');
+        const defasagemWheel = document.getElementById('defasagemWheel');
+        const wheelRibs = document.getElementById('wheelRibs');
+        const defasagemValue = document.getElementById('defasagemValue');
+        const gainSlider = document.getElementById('gainSlider');
+        const gainValue = document.getElementById('gainValue');
 
         // Parâmetros Elements
-        const modeSelect = document.getElementById('modeSelect');
+        const intervalSlider = document.getElementById('intervalSlider');
+        const intervalValue = document.getElementById('intervalValue');
         const freqSlider = document.getElementById('freqSlider');
         const freqValue = document.getElementById('freqValue');
         const decaySlider = document.getElementById('decaySlider');
         const decayValue = document.getElementById('decayValue');
+        const hideRecordsToggle = document.getElementById('hideRecordsToggle');
+
+        // Table Elements
+        const btnRegistrar = document.getElementById('btnRegistrar');
+        const recordsBody = document.getElementById('recordsBody');
+        const noRecordsMsg = document.getElementById('noRecordsMsg');
+        const btnSalvar = document.getElementById('btnSalvar');
+        const btnCopiar = document.getElementById('btnCopiar');
+        const btnLimpar = document.getElementById('btnLimpar');
 
         // State Variables
         let isPlaying = false;
         let audioCtx;
 
-        // Audio Engine Variables
+        // Audio Engine Timing Variables (Epoch Synchronization Engine)
         const lookahead = 25.0; // ms
-        const scheduleAheadTime = 0.5; // s (Margem para garantir tempos negativos grandes durante a defasagem)
-        let nextNoteTime = 0.0; // s (Referência de tempo para o próximo pulso)
+        const scheduleAheadTime = 0.15; // s (Menor margem para resposta ultra-rápida às alterações dos controles)
         let timerID;
+        const scheduledIndices = new Set(); // Guarda os índices de batida agendados para evitar duplicidade
 
         // Master nodes
         let masterGainNode;
         let limiter;
-        let noiseBuffer;
 
-        // Knob State
-        let finePhaseMs = 0; // -200 to +200 ms
-        let isDragging = false;
-        let startY = 0;
-        let startPhase = 0;
+        // Infinite Wheel Logic State
+        let defasagemMs = 0; // 0 to Max interval limit in ms
+        let isDraggingWheel = false;
+        let startWheelY = 0;
+        let startDefasagemMs = 0;
+        let wheelBackgroundY = 0;
+
+        // Registry Table State
+        let records = [];
+        let recordCounter = 1;
+        let isSaved = true; // Rastreia se as modificações atuais foram copiadas ou salvas
+        let hideRecordsActive = false;
 
         // Wake Lock
         let wakeLock = null;
@@ -480,11 +715,7 @@
         // Sliders Text Updates
         intervalSlider.addEventListener('input', (e) => {
             intervalValue.textContent = parseFloat(e.target.value).toFixed(2) + ' s';
-        });
-
-        coarseSlider.addEventListener('input', (e) => {
-            let val = parseFloat(e.target.value);
-            coarseValue.textContent = (val > 0 ? '+' : '') + val.toFixed(2) + ' s';
+            adjustDefasagemToInterval();
         });
 
         freqSlider.addEventListener('input', (e) => {
@@ -495,124 +726,295 @@
             decayValue.textContent = e.target.value + ' ms';
         });
 
-        volumeSlider.addEventListener('input', (e) => {
-            volumeValue.textContent = e.target.value + '%';
+        gainSlider.addEventListener('input', (e) => {
+            gainValue.textContent = e.target.value + '%';
             if (masterGainNode) {
                 let baseGain = parseFloat(e.target.value) / 100;
                 masterGainNode.gain.setTargetAtTime(baseGain, audioCtx.currentTime, 0.02);
             }
         });
 
-        // Knob Logic (Vertical drag)
-        knobWrapper.addEventListener('pointerdown', (e) => {
-            isDragging = true;
-            startY = e.clientY;
-            startPhase = finePhaseMs;
-            knobElement.style.transition = 'none';
+        // Infinite Scroll Wheel Logic (Vertical drag)
+        defasagemWheel.addEventListener('pointerdown', (e) => {
+            isDraggingWheel = true;
+            startWheelY = e.clientY;
+            startDefasagemMs = defasagemMs;
+            defasagemWheel.setPointerCapture(e.pointerId);
         });
 
-        document.addEventListener('pointermove', (e) => {
-            if (!isDragging) return;
+        defasagemWheel.addEventListener('pointermove', (e) => {
+            if (!isDraggingWheel) return;
 
-            const deltaY = startY - e.clientY;
-            // Sensibilidade do Knob: passo exato de 1 ms
-            let newPhase = Math.round(startPhase + (deltaY * 0.8));
+            const deltaY = startWheelY - e.clientY;
 
-            // Clamp -200 a +200 ms
-            newPhase = Math.max(-200, Math.min(200, newPhase));
+            // 1 pixel de arraste vertical = ajuste de 1 milissegundo de precisão
+            let targetVal = Math.round(startDefasagemMs + deltaY);
 
-            finePhaseMs = newPhase;
-            updateKnobVisuals();
+            // Resgata o teto dinâmico de intervalo em milissegundos
+            const baseIntervalSec = parseFloat(intervalSlider.value);
+            const maxMs = Math.round(baseIntervalSec * 1000);
+
+            // Comportamento Cíclico e Infinito
+            if (maxMs > 0) {
+                targetVal = targetVal % maxMs;
+                if (targetVal < 0) {
+                    targetVal += maxMs;
+                }
+            } else {
+                targetVal = 0;
+            }
+
+            defasagemMs = targetVal;
+
+            // Rotação visual através do movimento de background das estrias do tambor
+            wheelBackgroundY = (startDefasagemMs + deltaY) * 0.4;
+            wheelRibs.style.backgroundPositionY = `${wheelBackgroundY}px`;
+
+            updateDefasagemDisplay();
         });
 
-        document.addEventListener('pointerup', () => {
-            isDragging = false;
+        defasagemWheel.addEventListener('pointerup', (e) => {
+            if (isDraggingWheel) {
+                defasagemWheel.releasePointerCapture(e.pointerId);
+                isDraggingWheel = false;
+            }
         });
 
-        function updateKnobVisuals() {
-            // Visual rotation: 360 degrees = 100 ms
-            const rotationDeg = (finePhaseMs / 100) * 360;
-            knobElement.style.transform = `rotate(${rotationDeg}deg)`;
-            fineValueDisplay.textContent = (finePhaseMs > 0 ? '+' : '') + finePhaseMs + ' ms';
+        // Trata limite de defasagem quando o Intervalo Base é alterado
+        function adjustDefasagemToInterval() {
+            const baseIntervalSec = parseFloat(intervalSlider.value);
+            const maxMs = Math.round(baseIntervalSec * 1000);
+            if (maxMs > 0) {
+                defasagemMs = defasagemMs % maxMs;
+                if (defasagemMs < 0) {
+                    defasagemMs += maxMs;
+                }
+            } else {
+                defasagemMs = 0;
+            }
+            updateDefasagemDisplay();
         }
 
-        // -------------------------
-        // Audio Engine Logic
-        // -------------------------
-
-        function createNoiseBuffer() {
-            // Cria buffer de ruído branco de 0.5 segundos
-            const bufferSize = audioCtx.sampleRate * 0.5;
-            noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-            const output = noiseBuffer.getChannelData(0);
-            for (let i = 0; i < bufferSize; i++) {
-                output[i] = Math.random() * 2 - 1;
+        function updateDefasagemDisplay() {
+            if (hideRecordsActive) {
+                defasagemValue.textContent = '*** ms';
+            } else {
+                defasagemValue.textContent = defasagemMs + ' ms';
             }
         }
 
-        function scheduleTone(time, frequency, type) {
+        // Toggle Esconder Registros
+        hideRecordsToggle.addEventListener('change', (e) => {
+            hideRecordsActive = e.target.checked;
+            updateDefasagemDisplay();
+            renderTable();
+        });
+
+        // -------------------------
+        // Audio Engine & Sync Logic
+        // -------------------------
+
+        function scheduleTone(time, frequency) {
             if (!audioCtx) return;
 
             const decaySec = parseFloat(decaySlider.value) / 1000.0;
             const envelopeGain = audioCtx.createGain();
             envelopeGain.connect(masterGainNode);
 
-            // Envelope otimizado: Ataque muito rápido (mas não 0 para evitar click indesejado)
-            // Decaimento exponencial perfeito para mitigar reverberação/ground bounce
+            // Envelope dinâmico linear para o ataque e decaimento exponencial otimizado contra ecos de rebote
             envelopeGain.gain.setValueAtTime(0.0001, time);
-            envelopeGain.gain.exponentialRampToValueAtTime(1.0, time + 0.001);
+            envelopeGain.gain.linearRampToValueAtTime(1.0, time + 0.001);
             envelopeGain.gain.exponentialRampToValueAtTime(0.0001, time + decaySec);
 
-            let source;
+            const osc = audioCtx.createOscillator();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(frequency, time);
 
-            if (type === 'noise') {
-                source = audioCtx.createBufferSource();
-                source.buffer = noiseBuffer;
-            } else {
-                source = audioCtx.createOscillator();
-                source.type = type; // 'sine'
-                source.frequency.value = frequency;
-            }
-
-            source.connect(envelopeGain);
-            source.start(time);
-            source.stop(time + decaySec + 0.01);
+            osc.connect(envelopeGain);
+            osc.start(time);
+            osc.stop(time + decaySec + 0.01);
         }
 
+        /**
+         * O motor de agendamento (scheduler) alinha matematicamente as batidas em relação à Época UNIX (Epoch).
+         * Dois dispositivos executando este código em qualquer lugar do mundo estarão sintonizados no mesmo grid absoluto temporal
+         * de seus relógios de sistema (que são calibrados por rede celular LTE / NTP).
+         * Toda defasagem de processamento de interface, cliques ou abas fica isolada desse grid central e o timing real é mantido.
+         */
         function scheduler() {
             if (!isPlaying) return;
 
-            const coarseShift = parseFloat(coarseSlider.value); // sec
-            const fineShift = finePhaseMs / 1000.0; // sec
-            const totalShift = coarseShift + fineShift;
+            const period = parseFloat(intervalSlider.value); // s
+            const totalShift = defasagemMs / 1000.0; // s
 
-            // earliestTime é o tempo de emissão do pulso agendado (com sua defasagem)
-            let earliestTime = nextNoteTime + totalShift;
+            const nowAudio = audioCtx.currentTime;
+            const nowSystem = Date.now() / 1000.0; // Wall clock em segundos
 
-            while (earliestTime < audioCtx.currentTime + scheduleAheadTime) {
+            // Mapeia de forma contínua a diferença dinâmica entre o relógio de áudio (hardware) e o de sistema
+            const currentOffset = nowSystem - nowAudio;
 
-                const pulseTime = nextNoteTime + totalShift;
-                const baseFreq = parseFloat(freqSlider.value);
-                const mode = modeSelect.value;
+            // Busca o índice da batida na grade absoluta do Epoch.
+            // Queremos o menor 'k' cuja batida com deslocamento pertença ao futuro imediato
+            let k = Math.ceil((nowSystem - totalShift) / period);
 
-                // Emissão de Pulso (Variável em tempo e dependente do modo escolhido)
-                if (mode === 'livre') {
-                    scheduleTone(pulseTime, baseFreq, 'sine');
-                } else if (mode === 'dissonante') {
-                    scheduleTone(pulseTime, baseFreq + 15, 'sine');
-                } else if (mode === 'oitava') {
-                    scheduleTone(pulseTime, baseFreq * 2, 'sine');
-                } else if (mode === 'ruido') {
-                    scheduleTone(pulseTime, 0, 'noise');
+            while (true) {
+                const pulseTimeSystem = k * period;
+                const pulseTimeAudio = pulseTimeSystem - currentOffset + totalShift;
+
+                // Para se o tempo estimado ultrapassar a janela de agendamento antecipado
+                if (pulseTimeAudio > nowAudio + scheduleAheadTime) {
+                    break;
                 }
 
-                // Avança o relógio base para o próximo ciclo
-                nextNoteTime += parseFloat(intervalSlider.value);
-                earliestTime = nextNoteTime + totalShift;
+                // Agenda se o evento estiver na janela válida e não tiver sido enviado ainda
+                if (pulseTimeAudio >= nowAudio - 0.05) {
+                    if (!scheduledIndices.has(k)) {
+                        scheduleTone(pulseTimeAudio, parseFloat(freqSlider.value));
+                        scheduledIndices.add(k);
+                    }
+                }
+                k++;
+            }
+
+            // Garbage collector de batidas agendadas passadas para evitar saturação de memória
+            const minK = Math.floor((nowSystem - 5) / period);
+            for (const key of scheduledIndices) {
+                if (key < minK) {
+                    scheduledIndices.delete(key);
+                }
             }
 
             timerID = setTimeout(scheduler, lookahead);
         }
+
+        // -------------------------
+        // Registry Panel Actions
+        // -------------------------
+
+        function renderTable() {
+            recordsBody.innerHTML = '';
+
+            if (records.length === 0) {
+                noRecordsMsg.style.display = 'block';
+            } else {
+                noRecordsMsg.style.display = 'none';
+                records.forEach(rec => {
+                    const tr = document.createElement('tr');
+
+                    const tdNum = document.createElement('td');
+                    tdNum.textContent = rec.id;
+
+                    const tdTime = document.createElement('td');
+                    tdTime.textContent = rec.time;
+
+                    const tdDef = document.createElement('td');
+                    tdDef.textContent = hideRecordsActive ? '***' : rec.defasagem + ' ms';
+
+                    const tdAction = document.createElement('td');
+                    const btnDel = document.createElement('button');
+                    btnDel.className = 'btn-delete';
+                    btnDel.innerHTML = `
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                            <line x1="10" y1="11" x2="10" y2="17"></line>
+                            <line x1="14" y1="11" x2="14" y2="17"></line>
+                        </svg>
+                    `;
+                    btnDel.addEventListener('click', () => deleteRecord(rec.id));
+                    tdAction.appendChild(btnDel);
+
+                    tr.appendChild(tdNum);
+                    tr.appendChild(tdTime);
+                    tr.appendChild(tdDef);
+                    tr.appendChild(tdAction);
+                    recordsBody.appendChild(tr);
+                });
+            }
+        }
+
+        function addRecord() {
+            const now = new Date();
+            const hh = String(now.getHours()).padStart(2, '0');
+            const mm = String(now.getMinutes()).padStart(2, '0');
+            const ss = String(now.getSeconds()).padStart(2, '0');
+            const timeStr = `${hh}:${mm}:${ss}`;
+
+            const newRecord = {
+                id: recordCounter++,
+                time: timeStr,
+                defasagem: defasagemMs
+            };
+
+            records.push(newRecord);
+            isSaved = false;
+            renderTable();
+        }
+
+        function deleteRecord(id) {
+            records = records.filter(rec => rec.id !== id);
+            isSaved = false;
+            renderTable();
+        }
+
+        // Registrar
+        btnRegistrar.addEventListener('click', addRecord);
+
+        // Salvar (CSV)
+        btnSalvar.addEventListener('click', () => {
+            if (records.length === 0) return;
+
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "Numero,Hora,Defasagem (ms)\n";
+
+            records.forEach(rec => {
+                const defVal = hideRecordsActive ? '***' : rec.defasagem;
+                csvContent += `${rec.id},${rec.time},${defVal}\n`;
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `registros_som_da_terra_${Date.now()}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            isSaved = true;
+        });
+
+        // Copiar para área de transferência
+        btnCopiar.addEventListener('click', () => {
+            if (records.length === 0) return;
+
+            let textContent = "Nº\tHora\tDefasagem\n";
+            records.forEach(rec => {
+                const defVal = hideRecordsActive ? '***' : `${rec.defasagem} ms`;
+                textContent += `${rec.id}\t${rec.time}\t${defVal}\n`;
+            });
+
+            navigator.clipboard.writeText(textContent).then(() => {
+                alert('Tabela copiada para a área de transferência!');
+                isSaved = true;
+            }).catch(err => {
+                console.error('Erro ao copiar dados: ', err);
+            });
+        });
+
+        // Limpar registros com validação de dados não salvos
+        btnLimpar.addEventListener('click', () => {
+            if (records.length === 0) return;
+
+            if (!isSaved) {
+                const confirmClear = confirm("Você possui registros não salvos ou não copiados. Deseja realmente limpar toda a tabela?");
+                if (!confirmClear) return;
+            }
+
+            records = [];
+            recordCounter = 1;
+            isSaved = true;
+            renderTable();
+        });
 
         // -------------------------
         // Play/Pause & Wake Lock
@@ -641,8 +1043,7 @@
                     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
                     masterGainNode = audioCtx.createGain();
-                    // O ganho base é normalizado para um único sinal
-                    masterGainNode.gain.value = parseFloat(volumeSlider.value) / 100;
+                    masterGainNode.gain.value = parseFloat(gainSlider.value) / 100;
 
                     limiter = audioCtx.createDynamicsCompressor();
                     limiter.threshold.setValueAtTime(-1.0, audioCtx.currentTime);
@@ -653,8 +1054,6 @@
 
                     masterGainNode.connect(limiter);
                     limiter.connect(audioCtx.destination);
-
-                    createNoiseBuffer();
                 }
 
                 if (audioCtx.state === 'suspended') {
@@ -665,10 +1064,7 @@
                 powerBtn.classList.add('active');
                 powerText.textContent = "Ligado";
 
-                // Para corrigir o bug de tempos negativos iniciais, inicializamos nextNoteTime
-                // sempre bem no futuro para garantir que a subtração máxima de fase (-2.2s) 
-                // não agende eventos no passado (o que faz o web audio tocar instantaneamente)
-                nextNoteTime = audioCtx.currentTime + 3.0;
+                scheduledIndices.clear();
                 scheduler();
 
                 requestWakeLock();

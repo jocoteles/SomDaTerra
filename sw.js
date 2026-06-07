@@ -1,4 +1,4 @@
-const CACHE_NAME = 'som-da-terra-v4';
+const CACHE_NAME = 'som-da-terra-v4.1';
 const ASSETS = [
     './',
     './index.html',

@@ -670,6 +670,7 @@
         // State Variables
         let isPlaying = false;
         let audioCtx;
+        let epochOffset = 0; // Relação estável entre o relógio de sistema e o de áudio
 
         // Audio Engine Timing Variables (Epoch Synchronization Engine)
         const lookahead = 25.0; // ms
@@ -848,18 +849,15 @@
             const totalShift = defasagemMs / 1000.0; // s
 
             const nowAudio = audioCtx.currentTime;
-            const nowSystem = Date.now() / 1000.0; // Wall clock em segundos
 
-            // Mapeia de forma contínua a diferença dinâmica entre o relógio de áudio (hardware) e o de sistema
-            const currentOffset = nowSystem - nowAudio;
-
-            // Busca o índice da batida na grade absoluta do Epoch.
-            // Queremos o menor 'k' cuja batida com deslocamento pertença ao futuro imediato
-            let k = Math.ceil((nowSystem - totalShift) / period);
+            // Determina em qual índice da grade absoluta o tempo de áudio atual se encontra
+            const targetSystemTime = nowAudio + epochOffset - totalShift;
+            let k = Math.ceil(targetSystemTime / period);
 
             while (true) {
                 const pulseTimeSystem = k * period;
-                const pulseTimeAudio = pulseTimeSystem - currentOffset + totalShift;
+                // O cálculo do tempo de áudio agora usa o 'epochOffset' fixo, mantendo a distância exata de 'period'
+                const pulseTimeAudio = pulseTimeSystem - epochOffset + totalShift;
 
                 // Para se o tempo estimado ultrapassar a janela de agendamento antecipado
                 if (pulseTimeAudio > nowAudio + scheduleAheadTime) {
@@ -877,6 +875,7 @@
             }
 
             // Garbage collector de batidas agendadas passadas para evitar saturação de memória
+            const nowSystem = nowAudio + epochOffset;
             const minK = Math.floor((nowSystem - 5) / period);
             for (const key of scheduledIndices) {
                 if (key < minK) {
@@ -1063,6 +1062,9 @@
                 isPlaying = true;
                 powerBtn.classList.add('active');
                 powerText.textContent = "Ligado";
+
+                // Estabelece a relação estável com o relógio de sistema apenas na inicialização
+                epochOffset = (Date.now() / 1000.0) - audioCtx.currentTime;
 
                 scheduledIndices.clear();
                 scheduler();

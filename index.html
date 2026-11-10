@@ -515,13 +515,13 @@
         <!-- Power Button -->
         <button id="powerBtn" class="power-btn">
             <div class="indicator"></div>
-            <span id="powerText">Desligado</span>
+            <span id="powerText">OFF</span>
         </button>
 
         <!-- Navigation Tabs -->
         <div class="tabs-nav">
-            <button class="tab-btn active" data-target="tab-controls">Controles</button>
-            <button class="tab-btn" data-target="tab-params">Parâmetros</button>
+            <button class="tab-btn active" data-target="tab-controls">Controls</button>
+            <button class="tab-btn" data-target="tab-params">Parameters</button>
         </div>
 
         <!-- ABA 1: CONTROLES -->
@@ -533,7 +533,7 @@
 
                     <!-- Left: Defasagem (Infinite Drum Wheel) -->
                     <div class="vertical-control-wrapper">
-                        <span class="control-label">Defasagem</span>
+                        <span class="control-label">TIME OFFSET</span>
                         <div class="wheel-control" id="defasagemWheel">
                             <div class="wheel-ribs" id="wheelRibs"></div>
                             <div class="wheel-overlay"></div>
@@ -544,7 +544,7 @@
 
                     <!-- Right: Ganho (Standard Vertical Range) -->
                     <div class="vertical-control-wrapper">
-                        <span class="control-label">Ganho</span>
+                        <span class="control-label">GAIN</span>
                         <div class="gain-slider-container">
                             <input type="range" id="gainSlider" min="0" max="200" step="5" value="100"
                                 orient="vertical">
@@ -558,17 +558,17 @@
             <!-- Registry Panel -->
             <div class="card">
                 <div class="card-header">
-                    <h2 class="card-title">Valores de Defasagem</h2>
-                    <button id="btnRegistrar" class="btn-action primary">Registrar</button>
+                    <h2 class="card-title">Offset Records</h2>
+                    <button id="btnRegistrar" class="btn-action primary">Record</button>
                 </div>
 
                 <div class="table-container">
                     <table id="recordsTable">
                         <thead>
                             <tr>
-                                <th>Nº</th>
-                                <th>Hora</th>
-                                <th>Defasagem</th>
+                                <th>#</th>
+                                <th>Time</th>
+                                <th>Offset</th>
                                 <th style="width: 45px;"></th>
                             </tr>
                         </thead>
@@ -576,14 +576,14 @@
                             <!-- Dynamically added rows -->
                         </tbody>
                     </table>
-                    <div id="noRecordsMsg" class="instructions" style="margin: 15px 0;">Nenhum registro encontrado.
+                    <div id="noRecordsMsg" class="instructions" style="margin: 15px 0;">No records found.
                     </div>
                 </div>
 
                 <div class="records-footer">
-                    <button id="btnSalvar" class="btn-action">Salvar</button>
-                    <button id="btnCopiar" class="btn-action">Copiar</button>
-                    <button id="btnLimpar" class="btn-action danger">Limpar</button>
+                    <button id="btnSalvar" class="btn-action">Save</button>
+                    <button id="btnCopiar" class="btn-action">Copy</button>
+                    <button id="btnLimpar" class="btn-action danger">Clear</button>
                 </div>
             </div>
 
@@ -595,7 +595,7 @@
             <!-- Interval Base (Período) (Moved here, step changed to 0.2s) -->
             <div class="card">
                 <div class="card-header">
-                    <h2 class="card-title">Intervalo Base (Período)</h2>
+                    <h2 class="card-title">Base Interval (Period)</h2>
                     <span class="value-display" id="intervalValue">1.00 s</span>
                 </div>
                 <input type="range" id="intervalSlider" min="0.2" max="2.0" step="0.2" value="1.0">
@@ -604,7 +604,7 @@
             <!-- Frequency Control -->
             <div class="card">
                 <div class="card-header">
-                    <h2 class="card-title">Frequência Portadora</h2>
+                    <h2 class="card-title">Carrier Frequency</h2>
                     <span class="value-display" id="freqValue">4000 Hz</span>
                 </div>
                 <input type="range" id="freqSlider" min="3000" max="5000" step="200" value="4000">
@@ -613,7 +613,7 @@
             <!-- Decay Time Control -->
             <div class="card">
                 <div class="card-header">
-                    <h2 class="card-title">Decaimento do Envelope</h2>
+                    <h2 class="card-title">Envelope Decay</h2>
                     <span class="value-display" id="decayValue">50 ms</span>
                 </div>
                 <input type="range" id="decaySlider" min="10" max="100" step="10" value="50">
@@ -622,7 +622,7 @@
             <!-- Esconder registros Toggle -->
             <div class="card">
                 <div class="toggle-container">
-                    <span class="control-label" style="color: var(--text-main);">Esconder registros</span>
+                    <span class="control-label" style="color: var(--text-main);">HIDE RECORDS</span>
                     <label class="switch">
                         <input type="checkbox" id="hideRecordsToggle">
                         <span class="slider-toggle"></span>
@@ -1065,7 +1065,7 @@
 
                 isPlaying = true;
                 powerBtn.classList.add('active');
-                powerText.textContent = "Ligado";
+                powerText.textContent = "ON";
 
                 // Estabelece a relação estável com o relógio de sistema apenas na inicialização
                 epochOffset = (Date.now() / 1000.0) - audioCtx.currentTime;
@@ -1079,7 +1079,7 @@
                 isPlaying = false;
                 clearTimeout(timerID);
                 powerBtn.classList.remove('active');
-                powerText.textContent = "Desligado";
+                powerText.textContent = "OFF";
 
                 releaseWakeLock();
             }
